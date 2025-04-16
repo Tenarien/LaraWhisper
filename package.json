@@ -9,6 +9,7 @@
         "@tailwindcss/vite": "^4.0.0",
         "axios": "^1.8.2",
         "concurrently": "^9.0.1",
+        "daisyui": "^5.0.18",
         "laravel-echo": "^2.0.2",
         "laravel-vite-plugin": "^1.2.0",
         "pusher-js": "^8.4.0",
@@ -16,6 +17,7 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
+        "@heroicons/react": "^2.2.0",
         "@inertiajs/react": "^2.0.6",
         "@vitejs/plugin-react": "^4.3.4",
         "react": "^19.1.0",
