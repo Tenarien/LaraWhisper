@@ -38,7 +38,7 @@ class Group extends Model
         $query = self::select([
             'groups.*',
             'messages.message as last_message',
-            'messages.created_at as last_message_data',
+            'messages.created_at as last_message_date',
         ])
             ->join('group_users', 'group_users.group_id', '=', 'groups.id')
             ->leftJoin('messages', 'messages.id', '=', 'groups.last_message_id')
