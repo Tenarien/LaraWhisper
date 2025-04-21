@@ -8,10 +8,17 @@ Broadcast::channel('online', function ($user) {
     return $user ? new UserResource($user) : null;
 });
 
-Broadcast::channel('message.user.{userId1}-{userId2}', function (User $user, $userId1, $userId2) {
-    return $user->id === $userId1 || $user->id === $userId2 ? $user : null;
+Broadcast::channel('message.user.{userA}-{userB}', function (User $user, $userA, $userB) {
+    $ids = [
+        (int) $userA,
+        (int) $userB,
+    ];
+
+    return in_array($user->id, $ids, true)
+        ? $user
+        : null;
 });
 
 Broadcast::channel('message.group.{groupId}', function ($user, $groupId) {
-    return $user->groups->containts('id', $groupId) ? $user : null;
+    return $user->groups->contains('id', $groupId) ? $user : null;
 });
