@@ -20,7 +20,10 @@
         "@heroicons/react": "^2.2.0",
         "@inertiajs/react": "^2.0.6",
         "@vitejs/plugin-react": "^4.3.4",
+        "date-fns": "^4.1.0",
+        "emoji-picker-react": "^4.12.2",
         "react": "^19.1.0",
-        "react-dom": "^19.1.0"
+        "react-dom": "^19.1.0",
+        "react-markdown": "^10.1.0"
     }
 }
