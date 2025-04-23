@@ -2,6 +2,7 @@ import { Link, usePage } from "@inertiajs/react";
 import UserAvatar from "./UserAvatar.jsx";
 import GroupAvatar from "./GroupAvatar.jsx";
 import UserOptionsDropdown from "./UserOptionsDropdown.jsx";
+import {formatMessageDateShort} from "@/helpers.jsx";
 
 const ConversationItem = ({conversation, selectedConversation, online=null,})  => {
     const page = usePage();
@@ -29,7 +30,7 @@ const ConversationItem = ({conversation, selectedConversation, online=null,})  =
                 <div className="flex gap-1 justify-between items-center">
                     <h3 className="text-sm font-semibold overflow-hidden text-nowrap text-ellipsis">{conversation.name}</h3>
                     {conversation.last_message_date && (
-                        <span className="text-nowrap">{conversation.last_message_date}</span>)}
+                        <span className="text-nowrap">{formatMessageDateShort(conversation.last_message_date)}</span>)}
                 </div>
                 {conversation.last_message && (
                     <p className="text-xs text-nowrap overflow-hidden text-ellipsis">{conversation.last_message}</p>
