@@ -1,20 +1,87 @@
-import { useState } from 'react';
+import {useEffect, useState, useRef} from 'react';
 import NavButton from "@/Components/NavButton.jsx";
 import Dropdown from "@/Components/Dropdown.jsx";
 import { Link, usePage } from "@inertiajs/react";
 import {ChevronDownIcon} from "@heroicons/react/24/solid";
 import {Bars4Icon} from "@heroicons/react/24/solid";
+import {useEventBus} from "@/EventBus.jsx";
 
 export default function AuthLayout({ children }) {
-    const user = usePage().props.auth.user;
-
+    const page = usePage();
+    const user = page.props.auth.user;
+    const conversations = page.props.conversations;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const { emit } = useEventBus();
+
+    const subscribed = useRef(new Set());
+
+    useEffect(() => {
+        // helper for MessageSent handling
+        const handleMessageSent = (e) => {
+            const raw = e.message;
+            // normalize IDs to numbers
+            const message = {
+                ...raw,
+                sender_id:   Number(raw.sender_id),
+                receiver_id: Number(raw.receiver_id),
+                group_id:    raw.group_id != null ? Number(raw.group_id) : null,
+            };
+
+            emit("message.created", message);
+            if (message.sender_id !== user.id) {
+                emit("newMessageNotification", {
+                    user: message.sender,
+                    group_id: message.group_id,
+                    message: message.message || `Shared ${raw.attachments.length} attachments`,
+                });
+            }
+        };
+
+        // subscribe to any new channels
+        conversations.forEach((conversation) => {
+            const channel = conversation.is_user
+                ? `message.user.${[user.id, conversation.id]
+                    .map(Number)
+                    .sort((a, b) => a - b)
+                    .join("-")}`
+                : `message.group.${conversation.id}`;
+
+            if (!subscribed.current.has(channel)) {
+                Echo.private(channel)
+                    .error(console.error)
+                    .listen("MessageSent", handleMessageSent);
+                subscribed.current.add(channel);
+            }
+        });
+
+        // cleanup any channels that have been removed
+        return () => {
+            const current = new Set(
+                conversations.map((c) =>
+                    c.is_user
+                        ? `message.user.${[user.id, c.id]
+                            .map(Number)
+                            .sort((a, b) => a - b)
+                            .join("-")}`
+                        : `message.group.${c.id}`
+                )
+            );
+
+            // unsubscribe channels
+            subscribed.current.forEach((channel) => {
+                if (!current.has(channel)) {
+                    Echo.leave(channel);
+                    subscribed.current.delete(channel);
+                }
+            });
+        };
+    }, [conversations, emit, user.id]);
 
     return (
         <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900">
             <nav className="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 justify-between">
+                    <div className="flex h-14 justify-between">
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
                                 <Link href="/">
