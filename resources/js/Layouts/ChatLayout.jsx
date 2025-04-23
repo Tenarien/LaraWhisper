@@ -2,6 +2,7 @@ import {usePage} from "@inertiajs/react";
 import {useEffect, useState} from "react";
 import ConversationItem from "@/Components/Chat/ConversationItem.jsx";
 import { PencilSquareIcon } from '@heroicons/react/24/solid';
+import {useEventBus} from "@/EventBus.jsx";
 
 const ChatLayout = ({ children }) => {
     const page = usePage();
@@ -10,6 +11,7 @@ const ChatLayout = ({ children }) => {
     const [localConversations, setLocalConversations] = useState([]);
     const [sortedConversations, setSortedConversations] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState({});
+    const {on} = useEventBus();
 
     const isUserOnline = (userId) => onlineUsers[userId];
 
@@ -21,6 +23,34 @@ const ChatLayout = ({ children }) => {
             })
         );
     }
+
+    const messageCreated = (message) => {
+        setLocalConversations((oldConversations) => {
+            return oldConversations.map((conv) => {
+                if (message.receiver_id && !conv.is_group && (conv.id === message.sender_id || conv.id === message.receiver_id)) {
+                    conv.last_message = message.message;
+                    conv.last_message_date = message.created_at;
+                    return conv;
+                }
+
+                if (message.group_id && conv.is_group && conv.id === message.group_id) {
+                    conv.last_message = message.message;
+                    conv.last_message_date = message.created_at;
+                    return conv;
+                }
+
+                return conv;
+            });
+        });
+    };
+
+    useEffect(() => {
+        const offCreated = on("message.created", messageCreated);
+
+        return () => {
+            offCreated();
+        };
+    }, [on]);
 
     useEffect(() => {
         Echo.join('online')
@@ -76,12 +106,12 @@ const ChatLayout = ({ children }) => {
     }, [localConversations]);
 
     useEffect(() => {
-        setLocalConversations(conversations);
+        setLocalConversations([...conversations])
     }, [conversations]);
 
     return (
         <>
-            <div className="flex w-full h-[calc(100vh-4rem)] overflow-hidden">
+            <div className="flex w-full h-[calc(100vh-3.55rem)] overflow-hidden">
                 <div
                     className={`
                       transition-transform duration-300
@@ -89,8 +119,8 @@ const ChatLayout = ({ children }) => {
                       sm:w-[300px] md:w-[400px] lg:w-[500px]
                       flex flex-col overflow-hidden
                       ${selectedConversation
-                          ? '-translate-x-full sm:translate-x-0 w-0'
-                          : 'translate-x-0'}
+                        ? '-translate-x-full sm:translate-x-0 w-0'
+                        : 'translate-x-0 w-full'}
                     `}
                 >
                     <div className="flex items-center justify-between py-2 px-3 text-xl font-medium">
@@ -124,13 +154,11 @@ const ChatLayout = ({ children }) => {
 
                 <div
                     className={`
-                          flex flex-1 flex-col justify-end h-full min-h-0
-                          text-neutral-100 transition-transform duration-300 transform
-                          sm:w-max md:w-max lg:w-max
-                          overflow-hidden
+                          flex flex-col justify-end h-full min-h-0
+                          text-neutral-100 transition-transform duration-300 transform overflow-hidden
                           ${selectedConversation
-                            ? 'translate-x-0'
-                            : 'translate-x-full sm:translate-x-0 w-0'}
+                        ? 'translate-x-0 w-full'
+                        : 'translate-x-full sm:translate-x-0 w-0'}
                     `}
                 >
                     {children}
