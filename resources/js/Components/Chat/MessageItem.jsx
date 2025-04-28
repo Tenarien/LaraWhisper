@@ -3,8 +3,9 @@ import ReactMarkdown from "react-markdown";
 import React from "react";
 import UserAvatar from "@/Components/Chat/UserAvatar.jsx";
 import { formatMessageDateLong } from "@/helpers";
+import MessageAttachments from "@/Components/Chat/MessageAttachments.jsx";
 
-const MessageItem = ({ message }) => {
+const MessageItem = ({ message, attachmentClick }) => {
     const currentUser = usePage().props.auth.user;
 
     return (
@@ -16,11 +17,15 @@ const MessageItem = ({ message }) => {
                     {formatMessageDateLong(message.created_at)}
                 </time>
             </div>
-            <div className={"chat-bubble relative " + (message.sender_id === currentUser.id ? "bg-blue-500" : "bg-neutral-800")} >
+            <div className={"chat-bubble relative break-words " + (message.sender_id === currentUser.id ? "bg-blue-500" : "bg-neutral-800")} >
                 <div className="chat-message">
                     <div className="chat-message-content">
                         <ReactMarkdown>{message.message}</ReactMarkdown>
                     </div>
+                    <MessageAttachments
+                        attachments={message.attachments}
+                        attachmentClick={attachmentClick}
+                    />
                 </div>
             </div>
         </div>
