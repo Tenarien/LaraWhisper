@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,6 +52,14 @@ class AuthController extends Controller
                 'email' => $validatedData['email'],
                 'password' => bcrypt($validatedData['password'])
             ]);
+
+            $org = Organisation::create([
+                'name'     => "{$user->name}'s Organisation",
+                'owner_id' => $user->id,
+            ]);
+
+            $user->organisation_id = $org->id;
+            $user->save();
 
             Auth::login($user);
 
