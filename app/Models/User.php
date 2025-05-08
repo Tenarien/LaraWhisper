@@ -19,6 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'organisation_id',
         'name',
         'email',
         'password',
@@ -50,6 +51,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class);
+    }
+
     public function groups() : BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'group_users');
@@ -58,6 +64,11 @@ class User extends Authenticatable
     public static function getUsersExceptUser(User $user)
     {
         $userId = $user->id;
+        $orgId  = $user->organisation_id;
+
+        if (is_null($orgId)) {
+            return collect();
+        }
 
         $query = User::select([
             'users.*',
@@ -65,15 +76,16 @@ class User extends Authenticatable
             'messages.created_at as last_message_date',
         ])
             ->where('users.id', '!=', $userId)
-            ->when(!$user->isadmin, function ($query) {
-                $query->whereNull('users.blocked_at');
-            })
-            ->leftJoin('conversations', function ($join) use ($userId) {
+            ->where('users.organisation_id', $orgId)
+            ->when(! $user->is_admin, fn($q) => $q->whereNull('users.blocked_at'))
+            ->leftJoin('conversations', function ($join) use ($userId, $orgId) {
                 $join->on('conversations.user_id1', '=', 'users.id')
                     ->where('conversations.user_id2', '=', $userId)
-                ->orWhere(function ($query) use ($userId) {
+                    ->where('conversations.organisation_id', '=', $orgId)
+                ->orWhere(function ($query) use ($userId, $orgId) {
                     $query->on('conversations.user_id2', '=', 'users.id')
-                        ->where('conversations.user_id1', '=', $userId);
+                        ->where('conversations.user_id1', '=', $userId)
+                        ->where('conversations.organisation_id', '=', $orgId);
                 });
             })
             ->leftJoin('messages', 'messages.id', '=', 'conversations.last_message_id')
@@ -89,6 +101,7 @@ class User extends Authenticatable
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'avatar' => $this->avatar,
             'is_group' => false,
             'is_user' => true,
             'is_admin' => (bool) $this->is_admin,
