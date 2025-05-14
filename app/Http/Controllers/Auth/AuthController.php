@@ -30,7 +30,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($validatedData)) {
             $request->session()->regenerate();
-            return redirect()->intended('/')->with('success', 'You are now logged in!');
+            return redirect()->intended('/dashboard')->with('success', 'You are now logged in!');
         } else {
             throw ValidationException::withMessages([
                 'password' => 'The provided credentials do not match our records.',
