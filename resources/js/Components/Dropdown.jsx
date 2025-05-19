@@ -48,7 +48,7 @@ const Trigger = ({ children }) => {
 const Content = ({
                      align = 'right',
                      width = '48',
-                     contentClasses = 'py-1 bg-neutral-50 dark:bg-neutral-800',
+                     contentClasses = '',
                      children,
                  }) => {
     const { open } = useContext(DropDownContext);
@@ -58,7 +58,7 @@ const Content = ({
 
     return open ? (
         <div className={`absolute z-50 mt-2 rounded-md shadow-lg ${alignmentClasses} ${widthClasses} transition-all duration-200 ease-out`}>
-            <div className={`rounded-md ring-1 ring-black ring-opacity-5 ${contentClasses}`}>
+            <div className={`rounded-md ${contentClasses}`}>
                 {children}
             </div>
         </div>
@@ -69,7 +69,7 @@ const DropdownLink = ({ className = '', children, ...props }) => {
     return (
         <Link
             {...props}
-            className={`block w-full px-4 py-2 text-start text-sm leading-5 text-neutral-700 transition hover:bg-neutral-100 focus:outline-none dark:text-neutral-300 dark:hover:bg-neutral-700 ${className}`}
+            className={`block w-full px-4 py-2 text-start text-sm leading-5 text-neutral-100 transition hover:bg-white/10 focus:outline-none dark:text-neutral-100 dark:hover:bg-white/10 ${className}`}
         >
             {children}
         </Link>
