@@ -6,6 +6,8 @@ use App\Jobs\GroupDeleteJob;
 use App\Models\Group;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
+use App\Models\Organisation;
+use Illuminate\Auth\Access\Gate;
 
 class GroupController extends Controller
 {
@@ -15,10 +17,18 @@ class GroupController extends Controller
     public function store(StoreGroupRequest $request)
     {
         $data = $request->validated();
+        $data['organisation_id']      = $request->user()->organisation_id;
+        $org = Organisation::find($data['organisation_id']);
         $user_ids = $data['user_ids'] ?? [];
-        $group = Group::create($data);
 
-        $group->users()->attach(array_unique([$request->user()->id, ...$user_ids]));
+        if ($request->user()->organisation_id !== $org->id) {
+            abort(403);
+        }
+
+        $group = Group::create($data);
+        $group->users()->attach(
+            array_unique([$request->user()->id, ...$user_ids, $org->owner_id])
+        );
 
         return redirect()->back();
     }
@@ -28,11 +38,18 @@ class GroupController extends Controller
      */
     public function update(UpdateGroupRequest $request, Group $group)
     {
+        if ($group->owner_id !== $request->user()->id && $group->organisation->owner_id !== $request->user()->id) {
+            abort(403);
+        }
         $data = $request->validated();
+        $data['organisation_id'] = $request->user()->organisation_id;
+        $org = Organisation::find($data['organisation_id']);
         $user_ids = $data['user_ids'] ?? [];
-        $group->update($data);
 
-        $group->users()->sync(array_unique([$request->user()->id, ...$user_ids]));
+        $group->update($data);
+        $group->users()->sync(
+            array_unique([$request->user()->id, ...$user_ids, $org->owner_id])
+        );
 
         return back();
     }
@@ -42,7 +59,8 @@ class GroupController extends Controller
      */
     public function destroy(Group $group)
     {
-        if ($group->owner_id !== auth()->id()) {
+        $user = auth()->user();
+        if ($group->owner_id !== $user->id && $group->organisation->owner_id !== $user->id) {
             abort(403);
         }
 
