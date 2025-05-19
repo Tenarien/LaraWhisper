@@ -36,14 +36,6 @@ const ConversationItem = ({conversation, selectedConversation, online=null,})  =
                     <p className="text-xs text-nowrap overflow-hidden text-ellipsis">{conversation.last_message}</p>
                 )}
             </div>
-            {currentUser.is_admin && (
-                <div
-                    className="tooltip tooltip-left"
-                    data-tip="Dropdown options"
-                >
-                    <UserOptionsDropdown conversation={conversation}/>
-                </div>
-            )}
         </Link>
     );
 };
