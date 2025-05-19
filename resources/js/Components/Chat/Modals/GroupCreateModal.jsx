@@ -65,7 +65,7 @@ export default function GroupCreateModal({ show = false, onClose = () => {}}) {
                 <div className="flex flex-col gap-2 mt-6">
                     <label htmlFor="name">Name</label>
                     <input className="border border-white/25 rounded-md p-2 bg-black/25" required autoFocus type="text"
-                           id="name" name="name" value={group.id ? data.name : ""}
+                           id="name" name="name" value={data.name}
                            onChange={(e) => setData("name", e.target.value)}/>
                     {errors.name ?? (<p className="mt-2 text-red-500">{errors.name}</p>)}
                 </div>
@@ -82,7 +82,7 @@ export default function GroupCreateModal({ show = false, onClose = () => {}}) {
                     <label htmlFor="description">Description</label>
                     <textarea required id="description" name="description" rows="3"
                               className="mt-1 w-full block border border-white/25 rounded-md p-2 bg-black/25"
-                              value={group.id ? data.description : ""}
+                              value={data.description}
                               onChange={(e) => setData("description", e.target.value)}/>
                     {errors.description ?? (<p className="mt-2 text-red-500">{errors.description}</p>)}
                 </div>
