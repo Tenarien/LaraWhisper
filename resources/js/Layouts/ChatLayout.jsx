@@ -46,10 +46,29 @@ const ChatLayout = ({ children }) => {
         });
     };
 
-    const messageDeleted = ({lastMessage}) => {
-        if (!lastMessage) return;
+    const messageDeleted = ({message: deletedMessage, lastMessage}) => {
+        if (!lastMessage) {
+            setLocalConversations(oldConversations =>
+                oldConversations.map(conversation => {
+                    const isThisConversation =
+                        !conversation.is_group &&
+                        (conversation.id === deletedMessage.sender_id ||
+                            conversation.id === deletedMessage.receiver_id)
+                        ||
+                        conversation.is_group &&
+                        conversation.id === deletedMessage.group_id;
 
-        messageCreated(lastMessage)
+                    if (isThisConversation) {
+                        conversation.last_message      = '';
+                        conversation.last_message_date = '';
+                    }
+
+                    return conversation;
+                })
+            );
+        } else {
+            messageCreated(lastMessage);
+        }
     };
 
     useEffect(() => {
