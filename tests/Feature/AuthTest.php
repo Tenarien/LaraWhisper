@@ -17,7 +17,7 @@ it('authenticate user with valid credentials', function () {
     post('/login', ['email' => $user->email, 'password' => 'password'])->assertRedirect();
 });
 
-it('authenticate user with invalid credentials', function () {
+it('will not authenticate user with invalid credentials', function () {
     post('/login', ['email' => 'fake@email.com', 'password' => 'wrongpassword'])->assertSessionHasErrors();
 });
 
