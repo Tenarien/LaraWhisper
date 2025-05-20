@@ -5,14 +5,14 @@ const UserAvatar = ({ user, online = null, profile = false}) => {
 
     return (
         <>
-            {user.avatar_url && (
+            {user.avatar && (
                 <div className={`chat-image avatar ${onlineClass}`}>
                     <div className={`rounded-full ${sizeClass}`}>
-                        <img src={user.avatar_url} alt={user.name} />
+                        <img src={user.avatar} alt={user.name} />
                     </div>
                 </div>
             )}
-            {!user.avatar_url && (
+            {!user.avatar && (
                 <div className={`chat-image avatar placeholder ${onlineClass}`}>
                     <div className={`bg-neutral-400 text-neutral-800 rounded-full ${sizeClass}`}>
                         <p className="text-xl text-center">{user.name.substring(0, 1)}</p>
