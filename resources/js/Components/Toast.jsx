@@ -1,9 +1,10 @@
 import {useEventBus} from "@/EventBus.jsx";
 import {useEffect, useState} from "react";
 import {generateUUID} from "@/helpers.jsx";
+import {usePage} from "@inertiajs/react";
 
 export default function Toast() {
-    const [toasts, setToasts] = useState([]);
+    const [toasts, setToasts] = useState([] || usePage().props);
     const { on } = useEventBus();
 
     useEffect(() => {
