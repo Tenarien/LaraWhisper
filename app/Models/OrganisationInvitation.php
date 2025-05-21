@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 class OrganisationInvitation extends Model
 {
     protected $fillable = [
+        'user_id',
         'organisation_id',
         'email',
         'token',

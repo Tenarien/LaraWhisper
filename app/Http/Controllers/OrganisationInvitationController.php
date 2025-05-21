@@ -20,9 +20,9 @@ class OrganisationInvitationController extends Controller
 
         return inertia('Auth/AcceptInvitation', [
             'invite' => [
-                'email'            => $invite->email,
+                'email' => $invite->email,
                 'organisationName' => $invite->organisation->name,
-                'token'            => $invite->token,
+                'token' => $invite->token,
             ],
         ]);
     }
@@ -40,15 +40,15 @@ class OrganisationInvitationController extends Controller
         }
 
         $data = $request->validate([
-            'name'                  => ['required','string','max:255'],
-            'password'              => ['required','string','min:8','confirmed'],
+            'name' => ['required','string','max:255'],
+            'password' => ['required','string','min:8','confirmed'],
         ]);
 
         // Create the user
         $user = User::create([
-            'name'            => $data['name'],
-            'email'           => $invite->email,
-            'password'        => Hash::make($data['password']),
+            'name' => $data['name'],
+            'email' => $invite->email,
+            'password' => Hash::make($data['password']),
             'organisation_id' => $invite->organisation_id,
         ]);
 
