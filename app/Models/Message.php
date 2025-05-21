@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\OrganisationScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,11 +13,22 @@ class Message extends Model
     use HasFactory;
 
     protected $fillable = [
+        'organisation_id',
         'message',
         'sender_id',
         'group_id',
         'receiver_id'
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new OrganisationScope);
+    }
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class);
+    }
 
     public function group() : BelongsTo
     {
