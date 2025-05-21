@@ -1,8 +1,11 @@
-import {Link, useForm} from "@inertiajs/react";
+import {Head, Link, useForm, usePage} from "@inertiajs/react";
 import GuestLayout from "@/Layouts/GuestLayout.jsx";
+import HeaderLayout from "@/Layouts/HeaderLayout.jsx";
+import Toast from "@/Components/Toast.jsx";
 
 export default function Login() {
-    const { data, setData, post, processing, errors } = useForm({
+    const {errors} = usePage().props
+    const { data, setData, post, processing } = useForm({
         email: '',
         password: '',
     });
@@ -14,6 +17,8 @@ export default function Login() {
 
     return (
         <GuestLayout>
+            <Head title="Login"/>
+            <HeaderLayout/>
             <div className="min-h-screen flex items-center justify-center">
                 <div className="w-full max-w-md bg-neutral-50 p-8 rounded shadow-md">
                     <h1 className="text-2xl font-semibold text-neutral-800 mb-6 text-center">Login</h1>
@@ -84,6 +89,7 @@ export default function Login() {
                     </div>
                 </div>
             </div>
+            <Toast/>
         </GuestLayout>
     );
 }
