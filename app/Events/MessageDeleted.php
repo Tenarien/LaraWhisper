@@ -20,7 +20,7 @@ class MessageDeleted implements ShouldBroadcastNow
      */
     public function __construct(
         public Message $message,
-        public Message $lastMessage
+        public ?Message $lastMessage
     ) {
         //
     }
